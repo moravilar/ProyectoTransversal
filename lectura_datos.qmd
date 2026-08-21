@@ -105,7 +105,6 @@ archivos <- c("datos/estacionNH0472.csv", "datos/estacionNH0910.csv", "datos/est
 dataframe <- rbind(read_csv(archivos))
 
 #Para ver cuantas observaciones(sin vacios) tiene 
-sum(!is.na(dataframe$))
 ```
 
 RTA: 
