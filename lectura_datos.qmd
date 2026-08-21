@@ -1,0 +1,88 @@
+---
+title: "lectura_datos"
+format: html
+editor: visual
+---
+
+## Lectura de Datos Meteorologicos
+
+Cargamos las librerías que vamos a usar:
+
+```{r}
+library(readr)
+library(dplyr)
+library(tidyverse)
+
+# Incluyo tidyverse por las dudas de que me sirva mas adelante.
+```
+
+Descargamos cada dataset:
+
+```{r}
+metadatos_url <- "https://raw.githubusercontent.com/rse-r/intro-programacion/main/datos/metadatos_completos.csv"
+estacionNH0472_url <- "https://raw.githubusercontent.com/rse-r/intro-programacion/main/datos/NH0472.csv"
+estacionNH0910_url <- "https://raw.githubusercontent.com/rse-r/intro-programacion/main/datos/NH0910.csv"
+estacionNH0046_url <- "https://raw.githubusercontent.com/rse-r/intro-programacion/main/datos/NH0046.csv"
+estacionNH0098_url <- "https://raw.githubusercontent.com/rse-r/intro-programacion/main/datos/NH0098.csv"
+estacionNH0437_url <- "https://raw.githubusercontent.com/rse-r/intro-programacion/main/datos/NH0437.csv"
+
+metadatos_arch <- "datos/metadatos.csv"
+estacionNH0472_arch <- "datos/estacionNH0472.csv"
+estacionNH0910_arch <- "datos/estacionNH0910.csv"
+estacionNH0046_arch <- "datos/estacionNH0046.csv"
+estacionNH0098_arch <- "datos/estacionNH0098.csv"
+estacionNH0437_arch <- "datos/estacionNH0437.csv"
+
+
+
+download.file(url = metadatos_url, destfile = metadatos_arch)
+download.file(url = estacionNH0472_url, destfile = estacionNH0472_arch)
+download.file(url = estacionNH0910_url, destfile = estacionNH0910_arch)
+download.file(url = estacionNH0046_url, destfile = estacionNH0046_arch)
+download.file(url = estacionNH0098_url, destfile = estacionNH0098_arch)
+download.file(url = estacionNH0437_url, destfile = estacionNH0437_arch)
+```
+
+Leemos y mostramos los datos descargados:
+
+```{r} 
+#Para no repetir tantas veces la misma linea de codigo, implementamos una funcion
+
+archivos <- c("datos/metadatos.csv", "datos/estacionNH0472.csv", "datos/estacionNH0910.csv", "datos/estacionNH0046.csv", "datos/estacionNH0098.csv", "datos/estacionNH0437.csv")
+
+leer_y_mostrar <- function(ruta) {
+  datos <- read_csv(ruta)
+  str(datos)
+  glimpse(datos)
+}
+
+for (i in archivos) {leer_y_mostrar(i)}
+leer_y_mostrar(metadatos_arch)
+```
+
+RTA: Metadatos: tiene 11 columnas, y 258 observaciones Columnas: 1. id: cualitativa nominal 2. nombre: cualitativa nominal 3. tipo: cualitativa nominal 4. localidad: cualitativa nominal 5. lat, lon, altura: cuantitativa discreta 6. ubicacion: cualitativa nominal 7. desde, hasta: cualitativa nominal
+
+El archivo metadatos.csv no describe las columnas de mediciones (temperatura, humedad, etc.) — describe información sobre cada estación meteorológica en sí, reuniendo informacion de cuando se relevaron los datos de todos los otros archivos.
+
+NH0472: tiene 35 columnas y 20425 observaciones.
+NH0910: tiene 35 columnas y 15553 observaciones. 
+NH0046: tiene 35 columnas y 17041 observaciones. 
+NH0437: tiene 35 columnas y 18930 observaciones. 
+NH0098: tiene 35 columnas y 23734 observaciones. 
+Columnas: 1. id: cualitativa nominal 2. fecha: cualitativa ordinal 3. temperaturas: cuantitativas discretas 4. humedad_suelo: no se 5. precipitacion_pluviometrica: cuantitativa discreta 6. granizo: cualitativa dicotomica 7. nieve: cualitativa dicotomica 8. heliofania_efectiva, y relativa: 9. tesion_vapor_media: cuantitativa discreta 10. humedad_media: cuantitativa discreta 11. humedad_media_8_14_20: cuantitativa discreta 12. rocio_medio: cuantitativa discreta 13. duracion_follaje_mojado: depende de como se anote 14. velocidad_viento_200cm_media: cuantitativa discreta 15. direccion_viento_200cm: cualitativa nominal 16. volecidad_viento_1000cm_media: cuantitativa discreta 17. direccion_viento_1000cm: cualitativa nominal 18. velocidad_viento_maxima: cuantitativa discreta 19. presion_media: cuantitativa discreta 20. radiacion_global: cuantitativa discreta 21. radiacion_neta: cuantitativa discreta 22. evaporacion_tanque: cuantitativa discreta 23. evapotranspiracion_potencia1: cuantitativa discreta 24. profundidad_mapa: cuantitativa discreta 25. horas_frio: cuantitativa discreta 26. unidad_frio: cuantitativa discreta
+
+## Manipulacion de datos ordenados
+
+Unimos todos los data frames de las distintas estaciones.ESTO ESTA MAL, AYUDAA
+
+```{r}
+
+archivos <- c("datos/estacionNH0472.csv", "datos/estacionNH0910.csv", "datos/estacionNH0046.csv", "datos/estacionNH0098.csv", "datos/estacionNH0437.csv")
+dataframe <- rbind(read_csv(archivos))
+
+#Para ver cuantas observaciones(sin vacios) tiene 
+sum(!is.na(dataframe$))
+```
+
+RTA: 
+1. 
