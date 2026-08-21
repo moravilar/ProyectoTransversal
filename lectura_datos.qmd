@@ -69,7 +69,31 @@ NH0910: tiene 35 columnas y 15553 observaciones.
 NH0046: tiene 35 columnas y 17041 observaciones. 
 NH0437: tiene 35 columnas y 18930 observaciones. 
 NH0098: tiene 35 columnas y 23734 observaciones. 
-Columnas: 1. id: cualitativa nominal 2. fecha: cualitativa ordinal 3. temperaturas: cuantitativas discretas 4. humedad_suelo: no se 5. precipitacion_pluviometrica: cuantitativa discreta 6. granizo: cualitativa dicotomica 7. nieve: cualitativa dicotomica 8. heliofania_efectiva, y relativa: 9. tesion_vapor_media: cuantitativa discreta 10. humedad_media: cuantitativa discreta 11. humedad_media_8_14_20: cuantitativa discreta 12. rocio_medio: cuantitativa discreta 13. duracion_follaje_mojado: depende de como se anote 14. velocidad_viento_200cm_media: cuantitativa discreta 15. direccion_viento_200cm: cualitativa nominal 16. volecidad_viento_1000cm_media: cuantitativa discreta 17. direccion_viento_1000cm: cualitativa nominal 18. velocidad_viento_maxima: cuantitativa discreta 19. presion_media: cuantitativa discreta 20. radiacion_global: cuantitativa discreta 21. radiacion_neta: cuantitativa discreta 22. evaporacion_tanque: cuantitativa discreta 23. evapotranspiracion_potencia1: cuantitativa discreta 24. profundidad_mapa: cuantitativa discreta 25. horas_frio: cuantitativa discreta 26. unidad_frio: cuantitativa discreta
+Columnas: 1. id: cualitativa nominal 
+2. fecha: cualitativa ordinal 
+3. temperaturas: cuantitativas discretas 
+4. humedad_suelo: no se 
+5. precipitacion_pluviometrica: cuantitativa discreta 
+6. granizo: cualitativa dicotomica 
+7. nieve: cualitativa dicotomica 
+8. heliofania_efectiva, y relativa: 
+9. tesion_vapor_media: cuantitativa discreta 
+10. humedad_media: cuantitativa discreta 
+11. humedad_media_8_14_20: cuantitativa discreta 
+12. rocio_medio: cuantitativa discreta 
+13. duracion_follaje_mojado: depende de como se anote 
+14. velocidad_viento_200cm_media: cuantitativa discreta 
+15. direccion_viento_200cm: cualitativa nominal 
+16. volecidad_viento_1000cm_media: cuantitativa discreta 
+17. direccion_viento_1000cm: cualitativa nominal 
+18. velocidad_viento_maxima: cuantitativa discreta 
+19. presion_media: cuantitativa discreta 
+20. radiacion_global: cuantitativa discreta 
+21. radiacion_neta: cuantitativa discreta 
+22. evaporacion_tanque: cuantitativa discreta 
+23. evapotranspiracion_potencia1: cuantitativa discreta 
+24. profundidad_mapa: cuantitativa discreta 
+25. horas_frio: cuantitativa discreta 26. unidad_frio: cuantitativa discreta
 
 ## Manipulacion de datos ordenados
 
