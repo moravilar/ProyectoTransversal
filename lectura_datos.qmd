@@ -83,9 +83,49 @@ RTA: 1.
 # NH0437
 
 ```{r}
+library(tidyverse)
 dataframe <- rbind(read_csv(archivos))
-datos <- filter(.dataframe, id == "NH0437")
-ggplot()
 
+datos <- dataframe |>
+  filter(id == "NH0437")
+
+ggplot(datos, aes(x = fecha, y = temperatura_abrigo_150cm)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm") +
+  labs(title = "temperatura de abrigo - Estación NH0437",
+       x = "fecha", y = "temperatura de abrigo") +
+  theme_minimal()
 
 ```
+
+En respuesta a la pregunta del ejercicio ("*¿se mentiene constante la temperatura media con el tiempo o cambia?*"), la respuesta es: no, no se mantiene perfectamente constante e inclusive hay un leve aumento. La recta azul (que representa a la regresión lineal) no es estrictamente horizontal, pues arranca cerca de 19.5 grados Celsius cerca de 1970 y termina en los 21 en la actualidad (aproximadamente). Es una pendiente positiva (aunque muy suave), porque en un período de 50 años la temperatura media subió entre 1 y 1.5 grados.
+
+```{r}
+estaciones <- c("NH0437", "NH0046", "NH0098", "NH0472", "NH0910")
+
+datos_estaciones <- dataframe |>
+  filter(id %in% estaciones) |>
+  mutate(mes = month(fecha)) |>
+  group_by(id, mes) |>
+  summarise(temperatura_media = mean(temperatura_abrigo_150cm, na.rm = TRUE))
+
+ggplot(datos_estaciones, aes(x = mes, y = temperatura_media, color = id)) +
+  geom_line() +
+  labs(title = "temperatura media mensual por estación",
+       x = "mes", y = "temperatura media", color = "estación") +
+  theme_minimal()
+```
+
+```{r}
+
+dataframe <- rbind(read_csv(archivos))
+
+ggplot(dataframe, aes(x = humedad_media_8_14_20, y = temperatura_abrigo_150cm)) +
+  geom_point(alpha = 0.1) +
+  geom_smooth() +
+  labs(title = "relación entre temperatura de abrigo y humedad",
+       x = "Humedad media (8-14-20 hs)", y = "temperatura de abrigo") +
+  theme_minimal()
+```
+
+En respuesta a la pregunta del ejercicio ("¿*Cuál es la relación entre la temperatura de abrigo y la humedad?*"), existe una relación 'inversa' entre la humedad y la temperatura de abrigo: a mayor humedad, menor temperatura media, pero como la dispersión de datos es grande, la humedad por sí sola explica muy poco sobre la variación de la temperatura en consecuencia.
