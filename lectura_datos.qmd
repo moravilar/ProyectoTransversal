@@ -1,5 +1,5 @@
 ---
-title: "lectura_datos"
+title: "Proyecto_Transversal"
 format: html
 editor: visual
 ---
@@ -32,8 +32,6 @@ estacionNH0910_arch <- "datos/estacionNH0910.csv"
 estacionNH0046_arch <- "datos/estacionNH0046.csv"
 estacionNH0098_arch <- "datos/estacionNH0098.csv"
 estacionNH0437_arch <- "datos/estacionNH0437.csv"
-
-
 
 download.file(url = metadatos_url, destfile = metadatos_arch)
 download.file(url = estacionNH0472_url, destfile = estacionNH0472_arch)
@@ -86,10 +84,10 @@ RTA: 1.
 library(tidyverse)
 dataframe <- rbind(read_csv(archivos))
 
-datos <- dataframe |>
+datos_NH0347 <- dataframe |>
   filter(id == "NH0437")
 
-ggplot(datos, aes(x = fecha, y = temperatura_abrigo_150cm)) +
+ggplot(datos_NH0347, aes(x = fecha, y = temperatura_abrigo_150cm)) +
   geom_point(alpha = 0.5) +
   geom_smooth(method = "lm") +
   labs(title = "temperatura de abrigo - Estación NH0437",
@@ -107,18 +105,22 @@ datos_estaciones <- dataframe |>
   filter(id %in% estaciones) |>
   mutate(mes = month(fecha)) |>
   group_by(id, mes) |>
-  summarise(temperatura_media = mean(temperatura_abrigo_150cm, na.rm = TRUE))
+  summarise(temperatura_media = mean(temperatura_abrigo_150cm, na.rm = TRUE), desvio_estandar = sd(temperatura_abrigo_150cm, na.rm = TRUE))
 
-ggplot(datos_estaciones, aes(x = mes, y = temperatura_media, color = id)) +
+temperatura_media_grafico <- ggplot(datos_estaciones, aes(x = mes, y = temperatura_media, color = id)) +
   geom_line() +
   labs(title = "temperatura media mensual por estación",
+       x = "mes", y = "temperatura media", color = "estación") +
+  theme_minimal()
+
+desvio_estandar_grafico <- ggplot(datos_estaciones, aes(x = mes, y = desvio_estandar, color = id)) +
+  geom_line() +
+  labs(title = "desvio estandar de la temperatura mensual por estación",
        x = "mes", y = "temperatura media", color = "estación") +
   theme_minimal()
 ```
 
 ```{r}
-
-dataframe <- rbind(read_csv(archivos))
 
 ggplot(dataframe, aes(x = humedad_media_8_14_20, y = temperatura_abrigo_150cm)) +
   geom_point(alpha = 0.1) +
@@ -129,3 +131,38 @@ ggplot(dataframe, aes(x = humedad_media_8_14_20, y = temperatura_abrigo_150cm)) 
 ```
 
 En respuesta a la pregunta del ejercicio ("¿*Cuál es la relación entre la temperatura de abrigo y la humedad?*"), existe una relación 'inversa' entre la humedad y la temperatura de abrigo: a mayor humedad, menor temperatura media, pero como la dispersión de datos es grande, la humedad por sí sola explica muy poco sobre la variación de la temperatura en consecuencia.
+
+NOTAS: "dataframe" tiene todas las estaciones, sin metadatos
+"datos_NH0347" tiene solo de la estacion NH0347
+"datos_estaciones" tiene datos de las estaciones, pero solo variables id, mes del año, y el promedio de temperatura_abrigo_150cm
+
+```{r}
+
+datos_estaciones <- pivot_longer(datos_estaciones,
+                                 cols = c("temperatura_media", "desvio_estandar"),
+                                 names_to = "estadistico",
+                                 values_to = "valor")
+```
+```{r} 
+# Recuerdo que tenia un archivo metadatos, y veo las coincidencias que hay. Entiendo ahora que en metadato hay una observacion para cada estacion, poniendo sus datos unicos
+metadatos <- read_csv(metadatos_arch)
+
+dataframe |>
+  group_by(id) |>
+  summarise (cantidad = n())
+
+metadatos |>
+  filter(id == "NH0046" | id == "NH0098" | id == "NH0437" | id == "NH0472" | id == "NH0910") |>
+  group_by(id) |>
+  summarise(cantidad = n())
+```
+```{r}
+metadatos_filtrados <- metadatos |>
+  filter(id == "NH0046" | id == "NH0098" | id == "NH0437" | id == "NH0472" | id == "NH0910")
+
+dataframe <- full_join(metadatos_filtrados, dataframe, by = "id")
+```
+
+
+
+En respuesta a la pregunta del ejercicio ("*¿cual es la mejor opcion para unir los dataframes?*"), la respuesta es: un full_join, ya que no queremos perder ningun dato. Sin embargo, era necesario realizar un filtrado del dataset "metadatos" para quedarnos con las observaciones que necesitabamos.
