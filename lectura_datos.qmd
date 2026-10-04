@@ -132,9 +132,7 @@ ggplot(dataframe, aes(x = humedad_media_8_14_20, y = temperatura_abrigo_150cm)) 
 
 En respuesta a la pregunta del ejercicio ("¿*Cuál es la relación entre la temperatura de abrigo y la humedad?*"), existe una relación 'inversa' entre la humedad y la temperatura de abrigo: a mayor humedad, menor temperatura media, pero como la dispersión de datos es grande, la humedad por sí sola explica muy poco sobre la variación de la temperatura en consecuencia.
 
-NOTAS: "dataframe" tiene todas las estaciones, sin metadatos
-"datos_NH0347" tiene solo de la estacion NH0347
-"datos_estaciones" tiene datos de las estaciones, pero solo variables id, mes del año, y el promedio de temperatura_abrigo_150cm
+NOTAS: "dataframe" tiene todas las estaciones, sin metadatos "datos_NH0347" tiene solo de la estacion NH0347 "datos_estaciones" tiene datos de las estaciones, pero solo variables id, mes del año, y el promedio de temperatura_abrigo_150cm
 
 ```{r}
 
@@ -143,7 +141,8 @@ datos_estaciones <- pivot_longer(datos_estaciones,
                                  names_to = "estadistico",
                                  values_to = "valor")
 ```
-```{r} 
+
+```{r}
 # Recuerdo que tenia un archivo metadatos, y veo las coincidencias que hay. Entiendo ahora que en metadato hay una observacion para cada estacion, poniendo sus datos unicos
 metadatos <- read_csv(metadatos_arch)
 
@@ -156,6 +155,7 @@ metadatos |>
   group_by(id) |>
   summarise(cantidad = n())
 ```
+
 ```{r}
 metadatos_filtrados <- metadatos |>
   filter(id == "NH0046" | id == "NH0098" | id == "NH0437" | id == "NH0472" | id == "NH0910")
@@ -163,6 +163,89 @@ metadatos_filtrados <- metadatos |>
 dataframe <- full_join(metadatos_filtrados, dataframe, by = "id")
 ```
 
-
-
 En respuesta a la pregunta del ejercicio ("*¿cual es la mejor opcion para unir los dataframes?*"), la respuesta es: un full_join, ya que no queremos perder ningun dato. Sin embargo, era necesario realizar un filtrado del dataset "metadatos" para quedarnos con las observaciones que necesitabamos.
+
+## Ejercicio 7
+
+```{r - lectura}
+leer_estacion <- function(id_estacion, ruta) {
+  # i el archivo no existe lo descargamos asi no lo bajamos cada vez q corremos el codigo
+  if (!file.exists(ruta)) {
+    dir.create(dirname(ruta), showWarnings = FALSE, recursive = TRUE) #claude's help
+    url <- paste0("https://raw.githubusercontent.com/rse-r/intro-programacion/main/datos/", id_estacion, ".csv")
+    download.file(url = url, destfile = ruta)
+  }
+  
+  datos <- read_csv(ruta)
+  return(datos)
+}
+```
+
+-Generá una función grafico_temperatura_mensual que devuelva un gráfico que muestre el promedio mensual de la temperatura de abrigo. usá el código que generaste para el ejercicio 2 de ggplot2. La función debe:
+
+```{r - union de datos}
+datos_NH0437 <- leer_estacion("NH0437", "datos/NH0437.csv")
+datos_NH0910 <- leer_estacion("NH0910", "datos/NH0910.csv")
+
+datos_dos_estaciones <- bind_rows(datos_NH0437, datos_NH0910)
+```
+
+```{r - tabla}
+tabla_resumen_temperatura <- function(datos) {
+  resumen <- datos |>
+    mutate(mes = month(fecha)) |>
+    group_by(id, mes) |>
+    summarise(temperatura_media = mean(temperatura_abrigo_150cm, na.rm = TRUE),
+              desvio_estandar = sd(temperatura_abrigo_150cm, na.rm = TRUE),
+              .groups = "drop")
+  
+  resumen <- pivot_longer(resumen,
+                          cols = c("temperatura_media", "desvio_estandar"),
+                          names_to = "estadistico",
+                          values_to = "valor")
+  return(resumen)
+}
+
+tabla_resumen_temperatura(datos_NH0437)        # una estacion
+tabla_resumen_temperatura(datos_dos_estaciones) # dos estaciones
+```
+
+-grafico:
+
+```{r - grafico}
+grafico_temperatura_mensual <- function(datos, colores = NULL, titulo = "Temperatura") {
+  cantidad_estaciones <- length(unique(datos$id))
+  
+  # si no hay colores, elegimos al azar (reto)
+  if (is.null(colores) || length(colores) < cantidad_estaciones) {
+    colores <- sample(colors(), cantidad_estaciones)
+  }
+  
+  promedios <- datos |>
+    mutate(mes = month(fecha)) |>
+    group_by(id, mes) |>
+    summarise(temperatura_media = mean(temperatura_abrigo_150cm, na.rm = TRUE),
+              .groups = "drop")
+  
+  grafico <- ggplot(promedios, aes(x = mes, y = temperatura_media, color = id)) +
+    geom_line() +
+    scale_color_manual(values = colores) +
+    scale_x_continuous(breaks = 1:12) +
+    labs(title = titulo,
+         x = "mes", y = "temperatura media", color = "estación") +
+    theme_minimal()
+  
+  return(grafico)
+}
+```
+
+```{r - verificaion con prueba de casos}
+grafico_temperatura_mensual(datos_dos_estaciones,
+                            colores = c("orchid3", "steelblue"),
+                            titulo = "Temperatura media mensual")
+grafico_temperatura_mensual(datos_dos_estaciones, colores = c("orchid3", "steelblue"))
+
+grafico_temperatura_mensual(datos_NH0437)
+```
+
+Recibir el data.frame con los datos (que pueden ser de 1 o más estaciones). Tener un argumento para indicarle que colores debe usar para el gráfico. Tener un argumento para definir el título del gráfico. Por defecto, si no se define el título deberá aparecer “Temperatura” Desafio extra (opcional): modificá la función para que si no le pasas los colores necesarios, elija colores de manera aleatoria. Pista: revisá colors()
